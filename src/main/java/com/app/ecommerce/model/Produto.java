@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -16,125 +15,125 @@ public class Produto {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
-	private int id_prod;
+	private Long id;
 	
-	@NotBlank(message = "O Nome não pode estar Vazio.")
+	@NotNull(message = "O Nome não pode estar Vazio.")
 	@Size(max = 75)
-	private String nome_prod;
+	private String nome;
 
-	@NotBlank(message = "A Descrição não pode estar Vazia.")
+	@NotNull(message = "A Descrição não pode estar Vazia.")
 	@Size(max = 255)
-	private String desc_prod;
+	private String descricao;
 
 	@NotNull(message = "O Custo não pode estar Vazio")
-	private Double custo_prod;
+	private Float custo;
 
 	@NotNull(message = "O Valor não pode ser Nulo.")
-	private Double val_prod;
+	private Float valor;
 
 	@NotNull(message = "O Estoque não pode ser Nulo.")
-	private int qtd_estq;
+	private Integer estoque;
 	
-	private String cod_cat;
+	private String categoria;
 	
-	@NotBlank(message = "O URL da imagem não pode ser Nulo.")
-	private String image;
+	@NotNull(message = "O URL da imagem não pode ser Nulo.")
+	private String imagem;
 	
 	@NotNull(message = "O Peso não pode ser Nulo.")
     private Double peso_kg;
 
 	@NotNull(message = "O Comprimento não pode ser Nulo. ")
-    private int comprimento_cm;
+    private Integer comprimento_cm;
 
 	@NotNull(message = "A Altura não pode ser Nula.")
-	private int altura_cm;
+	private Integer altura_cm;
 	
 	@NotNull(message = "A Largura não pode ser Nula.")
-	private int largura_cm;
+	private Integer largura_cm;
 
 	
 	public Produto() {
 		
 	}
 	
-	public Produto(int id_prod, String nome_prod, String desc_prod, Double custo_prod, Double val_prod, 
-			int qtd_estq, String cod_cat, String image, Double peso_kg, int comprimento_cm, int altura_cm, int largura_cm) {
-		this.id_prod = id_prod;
-		this.nome_prod = nome_prod;
-		this.desc_prod = desc_prod;
-		this.custo_prod = custo_prod;
-		this.val_prod = val_prod;
-		this.qtd_estq = qtd_estq;
-		this.cod_cat = cod_cat;
-		this.image = image;
+	public Produto(Long id, String nome, String descricao, Float custo, Float valor, 
+			Integer estoque, String categoria, String imagem, Double peso_kg, Integer comprimento_cm, Integer altura_cm, Integer largura_cm) {
+		this.id = id;
+		this.nome = nome;
+		this.descricao = descricao;
+		this.custo = custo;
+		this.valor = valor;
+		this.estoque = estoque;
+		this.categoria = categoria;
+		this.imagem = imagem;
 		this.peso_kg = peso_kg;
 		this.comprimento_cm = comprimento_cm;
 		this.altura_cm = altura_cm;
 		this.largura_cm = largura_cm;
 	}
 
-	public int getId_prod() {
-		return id_prod;
+	public Long getId() {
+		return id;
 	}
 
-	public void setId_prod(int id_prod) {
-		this.id_prod = id_prod;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public String getNome_prod() {
-		return nome_prod;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setNome_prod(String nome_prod) {
-		this.nome_prod = nome_prod;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
-	public String getDesc_prod() {
-		return desc_prod;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setDesc_prod(String desc_prod) {
-		this.desc_prod = desc_prod;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
-	public Double getCusto_prod() {
-		return custo_prod;
+	public Float getCusto() {
+		return custo;
 	}
 
-	public void setCusto_prod(Double custo_prod) {
-		this.custo_prod = custo_prod;
+	public void setCusto(Float custo) {
+		this.custo = custo;
 	}
 
-	public Double getVal_prod() {
-		return val_prod;
+	public Float getValor() {
+		return valor;
 	}
 
-	public void setVal_prod(Double val_prod) {
-		this.val_prod = val_prod;
+	public void setValor(Float valor) {
+		this.valor = valor;
 	}
 
-	public int getQtd_estq() {
-		return qtd_estq;
+	public Integer getEstoque() {
+		return estoque;
 	}
 
-	public void setQtd_estq(int qtd_estq) {
-		this.qtd_estq = qtd_estq;
+	public void setEstoque(Integer estoque) {
+		this.estoque = estoque;
 	}
 
-	public String getCod_cat() {
-		return cod_cat;
+	public String getCategoria() {
+		return categoria;
 	}
 
-	public void setCod_cat(String cod_cat) {
-		this.cod_cat = cod_cat;
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
 	}
 
-	public String getImage() {
-		return image;
+	public String getImagem() {
+		return imagem;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
+	public void setImagem(String imagem) {
+		this.imagem = imagem;
 	}
 
 	public Double getPeso_kg() {
@@ -145,29 +144,27 @@ public class Produto {
 		this.peso_kg = peso_kg;
 	}
 
-	public int getComprimento_cm() {
+	public Integer getComprimento_cm() {
 		return comprimento_cm;
 	}
 
-	public void setComprimento_cm(int comprimento_cm) {
+	public void setComprimento_cm(Integer comprimento_cm) {
 		this.comprimento_cm = comprimento_cm;
 	}
 
-	public int getAltura_cm() {
+	public Integer getAltura_cm() {
 		return altura_cm;
 	}
 
-	public void setAltura_cm(int altura_cm) {
+	public void setAltura_cm(Integer altura_cm) {
 		this.altura_cm = altura_cm;
 	}
 
-	public int getLargura_cm() {
+	public Integer getLargura_cm() {
 		return largura_cm;
 	}
 
-	public void setLargura_cm(int largura_cm) {
+	public void setLargura_cm(Integer largura_cm) {
 		this.largura_cm = largura_cm;
 	}
-	
-	
 }
