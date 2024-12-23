@@ -46,4 +46,18 @@ public class UsuarioService {
 			return usuarioSalvo;
 		}
 	}
+	
+	public boolean verify(String code) {
+		Usuario cliente = usuarioRepository.findByVerificationCode(code);
+		
+		if(cliente == null || cliente.isEnabled()) {
+			return false;
+		} else {
+			cliente.setVerificationCode(null);
+			cliente.setEnabled(true);
+			usuarioRepository.save(cliente);
+			
+			return true;
+		}
+	}
 }
