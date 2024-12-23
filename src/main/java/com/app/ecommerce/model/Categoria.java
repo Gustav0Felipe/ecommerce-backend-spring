@@ -1,10 +1,16 @@
 package com.app.ecommerce.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +19,7 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "tb_categorias")
 public class Categoria {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
 	private Long cod_cat;
@@ -29,13 +36,18 @@ public class Categoria {
 	@Size(max = 75)
 	private String desc;
 
+	@OneToMany(mappedBy = "categoria", cascade = CascadeType.REMOVE)
+	@JsonIgnoreProperties("categoria")
+	private List<Produto> produtos;
 	
 	public Categoria() {
+		
 	}
 
-	public Categoria(Long cod_cat, String nome_cat) {
+	public Categoria(Long cod_cat, String nome_cat, List<Produto> produtos) {
 		this.cod_cat = cod_cat;
 		this.nome_cat = nome_cat;
+		this.produtos = produtos;
 	}
 
 	public Long getCod_cat() {
@@ -60,5 +72,13 @@ public class Categoria {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public List<Produto> getProdutos() {
+		return produtos;
+	}
+
+	public void setProdutos(List<Produto> produtos) {
+		this.produtos = produtos;
 	}
 }

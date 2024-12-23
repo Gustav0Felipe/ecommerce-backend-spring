@@ -1,10 +1,13 @@
 package com.app.ecommerce.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,8 +36,11 @@ public class Produto {
 
 	@NotNull(message = "O Estoque não pode ser Nulo.")
 	private Integer estoque;
-	
-	private String categoria;
+
+	@ManyToOne
+	@JsonIgnoreProperties("produtos")
+	@NotNull(message = "O Produto deve ter uma Categoria.")
+	private Categoria categoria;
 	
 	@NotNull(message = "O URL da imagem não pode ser Nulo.")
 	private String imagem;
@@ -57,7 +63,7 @@ public class Produto {
 	}
 	
 	public Produto(Long id, String nome, String descricao, Float custo, Float valor, 
-			Integer estoque, String categoria, String imagem, Double peso_kg, Integer comprimento_cm, Integer altura_cm, Integer largura_cm) {
+			Integer estoque, Categoria categoria, String imagem, Double peso_kg, Integer comprimento_cm, Integer altura_cm, Integer largura_cm) {
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
@@ -120,11 +126,11 @@ public class Produto {
 		this.estoque = estoque;
 	}
 
-	public String getCategoria() {
+	public Categoria getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(Categoria categoria) {
 		this.categoria = categoria;
 	}
 
