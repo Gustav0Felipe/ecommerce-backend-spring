@@ -23,4 +23,8 @@ public class ProdutoService {
 	public Optional<Produto> buscarProduto(@PathVariable Long id ) {
 		return produtoRepository.findById(id);
 	}
+
+	public Produto criarProduto(Produto produto) {
+		return produtoRepository.save(produto);
+	}
 }
