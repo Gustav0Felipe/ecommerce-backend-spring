@@ -51,7 +51,7 @@ public class CategoriaController {
     public ResponseEntity<Categoria> atualizarCategoria(@RequestBody Categoria categoria) {
         return categoriaRepository.findById(categoria.getCod_cat())  // Usando o ID do corpo da requisição
                 .map(existingCategoria -> {
-                    existingCategoria.setDesc(categoria.getDesc());
+                    existingCategoria.setDescricao(categoria.getDescricao());
                     categoriaRepository.save(existingCategoria);
                     return ResponseEntity.ok(existingCategoria);
                 })
