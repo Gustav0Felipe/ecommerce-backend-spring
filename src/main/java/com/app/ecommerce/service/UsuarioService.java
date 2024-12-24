@@ -17,12 +17,12 @@ public class UsuarioService {
 	public UsuarioRepository usuarioRepository;
 	
 	public Boolean clienteJaCadastrado(String email) {
-		return usuarioRepository.existsByUsuario(email);
+		return usuarioRepository.existsByEmail(email);
 	}
 	
 	public Usuario cadastrarCliente(Usuario usuario) {
 		
-		if(usuarioRepository.existsByUsuario(usuario.getEmail())){
+		if(usuarioRepository.existsByEmail(usuario.getEmail())){
 			throw new RuntimeException("Esse email já existe.");
 		} else {
 			usuario.setSenha(usuario.getSenha());
