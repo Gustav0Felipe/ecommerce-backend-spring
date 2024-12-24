@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.model.Usuario;
@@ -17,9 +16,6 @@ public class UsuarioService {
 	@Autowired 
 	public UsuarioRepository usuarioRepository;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
 	public Boolean clienteJaCadastrado(String email) {
 		return usuarioRepository.existsByUsuario(email);
 	}
@@ -29,8 +25,7 @@ public class UsuarioService {
 		if(usuarioRepository.existsByUsuario(usuario.getEmail())){
 			throw new RuntimeException("Esse email já existe.");
 		} else {
-			String encodedPassword = passwordEncoder.encode(usuario.getSenha());
-			usuario.setSenha(encodedPassword);
+			usuario.setSenha(usuario.getSenha());
 			
 			String randomCode = Utilitarios.gerarStringAlphanumerica(64);
 			List<UsuarioRole> roles = new LinkedList<UsuarioRole>();
