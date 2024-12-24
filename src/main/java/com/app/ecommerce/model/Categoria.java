@@ -34,7 +34,7 @@ public class Categoria {
 	@NotBlank(message = "A Descrição da Categoria não pode estar Vazia.")
 	@NotNull(message = "A Descrição da Categoria não pode estar Nula.")
 	@Size(max = 75)
-	private String desc;
+	private String descricao;
 
 	@OneToMany(mappedBy = "categoria", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("categoria")
@@ -66,12 +66,12 @@ public class Categoria {
 		this.nome_cat = nome_cat;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
 	public List<Produto> getProdutos() {
