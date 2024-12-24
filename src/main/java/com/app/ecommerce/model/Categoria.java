@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -25,16 +24,14 @@ public class Categoria {
 	private Long cod_cat;
 
 	@Column
-	@NotBlank(message = "O Nome da Categoria não pode estar Vazio.")
 	@NotNull(message = "O Nome da Categoria não pode estar Nulo.")
 	@Size(max = 75)
 	private String nome_cat;
 
 	@Column
-	@NotBlank(message = "A Descrição da Categoria não pode estar Vazia.")
 	@NotNull(message = "A Descrição da Categoria não pode estar Nula.")
 	@Size(max = 75)
-	private String desc;
+	private String descricao;
 
 	@OneToMany(mappedBy = "categoria", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("categoria")
@@ -66,12 +63,12 @@ public class Categoria {
 		this.nome_cat = nome_cat;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
 	public List<Produto> getProdutos() {

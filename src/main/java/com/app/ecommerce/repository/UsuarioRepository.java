@@ -11,9 +11,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
 	public List<Usuario> findAll();
 	
-	public Usuario findByUsuario();
+	public Usuario findByEmail(@Param("Email") String email);
 
-	public Boolean existsByUsuario(@Param("email")String email);
+	public Boolean existsByEmail(@Param("email")String email);
 
 	public Usuario findByVerificationCode(String code);
 	

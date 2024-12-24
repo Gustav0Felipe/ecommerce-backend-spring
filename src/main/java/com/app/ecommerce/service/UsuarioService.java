@@ -17,16 +17,15 @@ public class UsuarioService {
 	@Autowired 
 	public UsuarioRepository usuarioRepository;
 	
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	public Boolean clienteJaCadastrado(String email) {
-		return usuarioRepository.existsByUsuario(email);
+		return usuarioRepository.existsByEmail(email);
 	}
 	
 	public Usuario cadastrarCliente(Usuario usuario) {
 		
-		if(usuarioRepository.existsByUsuario(usuario.getEmail())){
+		if(usuarioRepository.existsByEmail(usuario.getEmail())){
 			throw new RuntimeException("Esse email já existe.");
 		} else {
 			String encodedPassword = passwordEncoder.encode(usuario.getSenha());
