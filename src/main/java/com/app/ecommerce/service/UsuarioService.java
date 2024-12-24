@@ -2,6 +2,7 @@ package com.app.ecommerce.service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,15 +48,14 @@ public class UsuarioService {
 	}
 	
 	public boolean verify(String code) {
-		Usuario cliente = usuarioRepository.findByVerificationCode(code);
+		Optional<Usuario> cliente = usuarioRepository.findByVerificationCode(code);
 		
-		if(cliente == null || cliente.isEnabled()) {
+		if(cliente.isEmpty() || cliente.get().isEnabled()) {
 			return false;
 		} else {
-			cliente.setVerificationCode(null);
-			cliente.setEnabled(true);
-			usuarioRepository.save(cliente);
-			
+			cliente.get().setVerificationCode(null);
+			cliente.get().setEnabled(true);
+			usuarioRepository.save(cliente.get());
 			return true;
 		}
 	}
