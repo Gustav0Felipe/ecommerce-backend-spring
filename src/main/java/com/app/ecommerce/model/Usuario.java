@@ -41,7 +41,7 @@ public class Usuario {
 	public String cpf;
 	
 	@NotNull(message = "A Permissão do Usuario não pode ser Nula.")
-	private List<UsuarioRole> role;
+	private List<String> role;
 	
 	@NotBlank(message = "O Endereço não pode estar Vazio.")
 	@NotNull(message = "o Endereço do Usuario não pode ser Nulo.")
@@ -57,7 +57,7 @@ public class Usuario {
 
 	public Usuario(String nome_user, String telefone,
 			String email, String senha,
-			String cpf, List<UsuarioRole> role, String endereco, String verification_code, boolean enabled) {
+			String cpf, List<String> role, String endereco, String verification_code, boolean enabled) {
 		this.nome_user = nome_user;
 		this.telefone = telefone;
 		this.email = email;
@@ -117,11 +117,11 @@ public class Usuario {
 		this.cpf = cpf;
 	}
 
-	public List<UsuarioRole> getRole() {
+	public List<String> getRole() {
 		return role;
 	}
 
-	public void setRole(List<UsuarioRole> role) {
+	public void setRole(List<String> role) {
 		this.role = role;
 	}
 

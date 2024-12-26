@@ -1,13 +1,11 @@
 package com.app.ecommerce.service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.model.Usuario;
-import com.app.ecommerce.model.UsuarioRole;
 import com.app.ecommerce.repository.UsuarioRepository;
 import com.app.ecommerce.util.Utilitarios;
 
@@ -28,12 +26,9 @@ public class UsuarioService {
 			usuario.setSenha(usuario.getSenha());
 			
 			String randomCode = Utilitarios.gerarStringAlphanumerica(64);
-			List<UsuarioRole> roles = new LinkedList<UsuarioRole>();
-			roles.add(UsuarioRole.USER);
-			
+
 			usuario.setVerificationCode(randomCode);
 			usuario.setEnabled(false);
-			usuario.setRole(roles);
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
 			//Mandar Email de confirmação para o Cliente e criar endpoint para o Verification ser Verificado.
@@ -54,5 +49,9 @@ public class UsuarioService {
 			
 			return true;
 		}
+	}
+
+	public List<Usuario> listarTodos() {
+		return usuarioRepository.findAll();
 	}
 }
