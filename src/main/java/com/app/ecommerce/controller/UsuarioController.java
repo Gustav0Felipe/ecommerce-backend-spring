@@ -6,11 +6,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.dto.AtualizarUsuario;
@@ -32,6 +32,7 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuarioService.listarTodos());
 	}
 	
+	//Testar tudo abaixo, inclusive Cadastrar e Verificar por Email, se o email esta sendo mandado.
 	@Transactional
 	@PostMapping
 	public ResponseEntity<Usuario> cadastrarCliente(@RequestBody @Valid Usuario usuario) {
@@ -40,6 +41,15 @@ public class UsuarioController {
 			.orElse(ResponseEntity.badRequest().build());
 	}
 	
+	@GetMapping("/verificar/{code}")
+	public Boolean verificarUsuario(@PathVariable String code) {
+		if(usuarioService.verify(code)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Transactional
 	@PutMapping("/atualizar")
 	public ResponseEntity<Usuario> atualizarDados(@RequestBody @Valid AtualizarUsuario dados ) {	
@@ -51,12 +61,19 @@ public class UsuarioController {
 		
 	} 
 	
-	@GetMapping("/verificar")
-	public Boolean verificarUsuario(@RequestParam String code) {
-		if(usuarioService.verify(code)) {
-			return true;
-		} else {
-			return false;
+	@PostMapping("/email-alterar-senha")
+	public String emailAlterarSenha(@RequestBody Usuario usuario) {
+		String token = usuarioService.emailAlterarSenha(usuario);
+		if(token != null) {
+			return token;
+		}else {
+			return null;
 		}
 	}
+	
+	@PutMapping("/editar-senha")
+	public Usuario editarSenha(@RequestBody Usuario usuario) {
+		return usuarioService.editarSenha(usuario);
+	}
+	
 }

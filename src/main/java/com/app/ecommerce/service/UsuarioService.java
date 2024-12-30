@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.dto.AtualizarUsuario;
@@ -16,16 +17,19 @@ public class UsuarioService {
 	@Autowired 
 	public UsuarioRepository usuarioRepository;
 	
-	public Boolean clienteJaCadastrado(String email) {
-		return usuarioRepository.existsByEmail(email);
-	}
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	private EmailService emailService;
+	
+	//Testar tudo Inclusive Criptografia e Emails.
 	public Usuario cadastrarCliente(Usuario usuario) {
 		
 		if(usuarioRepository.existsByEmail(usuario.getEmail())){
 			return null;
 		} else {
-			usuario.setSenha(usuario.getSenha());
+			usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 			
 			String randomCode = Utilitarios.gerarStringAlphanumerica(64);
 
@@ -33,22 +37,25 @@ public class UsuarioService {
 			usuario.setEnabled(false);
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
-			//Mandar Email de confirmação para o Cliente e criar endpoint para o Verification ser Verificado.
-			
+			String msg = ("<h1>Olá [[NOME]], aqui esta o link para confirmar seu cadastro: </h1>"
+					+ String.format("<a href='%s/cadastro/usuarios/%s'>Clique Aqui</a>", 
+							"http://localhost:5173/loja", usuario.getVerificationCode())
+					).replace("[[NOME]]", usuario.getNome_user());
+			emailService.enviarEmailTexto(usuario.getEmail(), "Confirme o Seu Cadastro.", msg);
+
 			return usuarioSalvo;
 		}
 	}
 	
 	public boolean verify(String code) {
-		Usuario cliente = usuarioRepository.findByVerificationCode(code);
+		Optional<Usuario> cliente = usuarioRepository.findByVerificationCode(code);
 		
-		if(cliente == null || cliente.isEnabled()) {
+		if(cliente.isEmpty() || cliente.get().isEnabled()) {
 			return false;
 		} else {
-			cliente.setVerificationCode(null);
-			cliente.setEnabled(true);
-			usuarioRepository.save(cliente);
-			
+			cliente.get().setVerificationCode(null);
+			cliente.get().setEnabled(true);
+			usuarioRepository.save(cliente.get());
 			return true;
 		}
 	}
@@ -70,6 +77,36 @@ public class UsuarioService {
 		else {
 			return null;
 		}
-		
+	}
+	
+	public boolean validarSenha(Usuario usuario) {
+		Optional<Usuario> userDatabase = usuarioRepository.findById(usuario.getId_user());
+		if(userDatabase.isPresent() && passwordEncoder.matches(usuario.getSenha(), userDatabase.get().getSenha())) 
+			return true;
+		else
+			return false;
+	}
+	
+	
+	public String emailAlterarSenha(Usuario usuario) {
+		if(validarSenha(usuario)) {
+			String token = Utilitarios.gerarStringAlphanumerica(64);
+			
+			String htmlMsg = 
+				("<h1>Aviso!: Tentaram alterar a senha de sua conta no site Ecommerce</h1>"
+				+ "<p>Se for o dono da conta, [[NOME]] , e não for aquele que efetuou o pedido, entre em contato, caso tenha efetuado o pedido: </p>"
+				+ "<a href='%s/perfil/editar-senha/%s'>Para prosseguir e alterar sua senha clique aqui.<a>"
+				.formatted("http://localhost:5173/loja", token)
+				).replace("[[NOME]]", usuario.getNome_user());
+			
+			emailService.enviarEmailTexto(usuario.getEmail(), "Tentativa de Alteração de Senha", htmlMsg);
+			return token;
+		}
+		return null;
+	}
+
+	public Usuario editarSenha(Usuario usuario) {
+			usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+			return usuarioRepository.save(usuario);
 	}
 }

@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -25,13 +24,11 @@ public class Categoria {
 	private Long cod_cat;
 
 	@Column
-	@NotBlank(message = "O Nome da Categoria não pode estar Vazio.")
 	@NotNull(message = "O Nome da Categoria não pode estar Nulo.")
 	@Size(max = 75)
 	private String nome_cat;
 
 	@Column
-	@NotBlank(message = "A Descrição da Categoria não pode estar Vazia.")
 	@NotNull(message = "A Descrição da Categoria não pode estar Nula.")
 	@Size(max = 75)
 	private String descricao;

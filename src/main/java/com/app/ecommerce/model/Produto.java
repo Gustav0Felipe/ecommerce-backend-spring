@@ -173,4 +173,5 @@ public class Produto {
 	public void setLargura_cm(Integer largura_cm) {
 		this.largura_cm = largura_cm;
 	}
+	
 }

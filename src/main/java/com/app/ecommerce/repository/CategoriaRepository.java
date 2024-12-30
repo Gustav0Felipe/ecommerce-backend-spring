@@ -11,6 +11,6 @@ import com.app.ecommerce.model.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    List<Categoria> findAllByDescricaoContainingIgnoreCase(@Param("desc") String desc);
+    public List<Categoria> findAllByDescricaoContainingIgnoreCase(@Param("descricao") String descricao);
 
 }

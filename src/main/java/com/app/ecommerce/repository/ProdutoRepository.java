@@ -12,10 +12,10 @@ import com.app.ecommerce.model.Produto;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-	Produto findById(int id);
+	public Produto findById(int id);
 	
-	Produto findByNome(@Param("nome")String nome_produto);
+	public Produto findByNome(@Param("nome")String nome_produto);
 	
-	List<Produto> findAll(); 
+	public List<Produto> findAll(); 
 	
 }

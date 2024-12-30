@@ -1,6 +1,7 @@
 package com.app.ecommerce.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -11,10 +12,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
 	public List<Usuario> findAll();
 	
-	public Usuario findByEmail(@Param("email") String email);
+	public Optional<Usuario> findByEmail(@Param("Email") String email);
 
 	public Boolean existsByEmail(@Param("email")String email);
 
-	public Usuario findByVerificationCode(String code);
+	public Optional<Usuario> findByVerificationCode(String code);
 	
 }
