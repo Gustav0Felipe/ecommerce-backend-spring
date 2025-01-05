@@ -38,8 +38,8 @@ public class UsuarioService {
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
 			String msg = ("<h1>Olá [[NOME]], aqui esta o link para confirmar seu cadastro: </h1>"
-					+ String.format("<a href='%s/cadastro/usuarios/%s'>Clique Aqui</a>", 
-							"http://localhost:5173/loja", usuario.getVerificationCode())
+					+ String.format("<a href='%s/verificar/%s'>Clique Aqui</a>", 
+							"http://localhost:8080/usuarios", usuario.getVerificationCode())
 					).replace("[[NOME]]", usuario.getNome_user());
 			emailService.enviarEmailTexto(usuario.getEmail(), "Confirme o Seu Cadastro.", msg);
 
@@ -96,7 +96,7 @@ public class UsuarioService {
 				("<h1>Aviso!: Tentaram alterar a senha de sua conta no site Ecommerce</h1>"
 				+ "<p>Se for o dono da conta, [[NOME]] , e não for aquele que efetuou o pedido, entre em contato, caso tenha efetuado o pedido: </p>"
 				+ "<a href='%s/perfil/editar-senha/%s'>Para prosseguir e alterar sua senha clique aqui.<a>"
-				.formatted("http://localhost:5173/loja", token)
+				.formatted("http://localhost:8080/usuarios", token)
 				).replace("[[NOME]]", usuario.getNome_user());
 			
 			emailService.enviarEmailTexto(usuario.getEmail(), "Tentativa de Alteração de Senha", htmlMsg);
