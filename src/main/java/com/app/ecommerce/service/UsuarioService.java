@@ -4,12 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.dto.AtualizarUsuario;
+import com.app.ecommerce.dto.EmailSenha;
+import com.app.ecommerce.dto.LoginUsuario;
 import com.app.ecommerce.model.Usuario;
 import com.app.ecommerce.repository.UsuarioRepository;
+import com.app.ecommerce.security.JwtService;
 import com.app.ecommerce.util.Utilitarios;
 
 @Service
@@ -22,6 +27,12 @@ public class UsuarioService {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private JwtService jwtService;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	
 	//Testar tudo Inclusive Criptografia e Emails.
 	public Usuario cadastrarCliente(Usuario usuario) {
@@ -60,6 +71,32 @@ public class UsuarioService {
 		}
 	}
 
+	public LoginUsuario validarLogin(EmailSenha userPass) {
+		
+		Boolean existe = usuarioRepository.existsByEmail(userPass.email());
+		
+		//Checar se dará erro, ao não existir e tentar pegar Email de algo inexistente, não deveria dar erro,
+		//pois nem sequer deve chegar a testar a segunda declaração se confirmar que não existe na primeira.
+		if(!existe || !usuarioRepository.findByEmail(userPass.email()).get().isEnabled()) {
+			System.out.println("Inexistente" + existe);
+			return null;
+		}
+		Usuario usuario = usuarioRepository.findByEmail(userPass.email()).get();
+		if(!usuario.isEnabled()) {
+			return null;
+		}
+		
+		var usernamePassword = new UsernamePasswordAuthenticationToken(userPass.email(), userPass.senha());
+		
+		var auth = authenticationManager.authenticate(usernamePassword);
+			
+		var token = jwtService.generateToken(usuario.getEmail());
+		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
+				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token);
+	}
+	
+	
+	
 	public List<Usuario> listarTodos() {
 		return usuarioRepository.findAll();
 	}

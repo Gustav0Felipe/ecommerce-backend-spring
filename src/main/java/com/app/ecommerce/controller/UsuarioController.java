@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.dto.AtualizarUsuario;
+import com.app.ecommerce.dto.EmailSenha;
+import com.app.ecommerce.dto.LoginUsuario;
 import com.app.ecommerce.model.Usuario;
 import com.app.ecommerce.service.UsuarioService;
 
@@ -32,7 +34,6 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuarioService.listarTodos());
 	}
 	
-	//Testar tudo abaixo, inclusive Cadastrar e Verificar por Email, se o email esta sendo mandado.
 	@Transactional
 	@PostMapping
 	public ResponseEntity<Usuario> cadastrarCliente(@RequestBody @Valid Usuario usuario) {
@@ -48,6 +49,13 @@ public class UsuarioController {
 		} else {
 			return false;
 		}
+	}
+	
+	@PostMapping("/logar")
+	public ResponseEntity<LoginUsuario> login(@RequestBody EmailSenha userPass){
+		return Optional.ofNullable(usuarioService.validarLogin(userPass))
+				.map(login -> ResponseEntity.ok(login))
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@Transactional
