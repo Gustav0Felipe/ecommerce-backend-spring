@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,23 +74,17 @@ public class UsuarioService {
 
 	public LoginUsuario validarLogin(EmailSenha userPass) {
 		
-		Boolean existe = usuarioRepository.existsByEmail(userPass.email());
+		var credenciais = new UsernamePasswordAuthenticationToken(userPass.email(), userPass.senha());
 		
-		//Checar se dará erro, ao não existir e tentar pegar Email de algo inexistente, não deveria dar erro,
-		//pois nem sequer deve chegar a testar a segunda declaração se confirmar que não existe na primeira.
-		if(!existe || !usuarioRepository.findByEmail(userPass.email()).get().isEnabled()) {
-			System.out.println("Inexistente" + existe);
+		Authentication authentication = authenticationManager.authenticate(credenciais);
+		
+		//Checa se Existe e se esta Ativado.
+		if(!authentication.isAuthenticated() | !usuarioRepository.findByEmail(userPass.email()).get().isEnabled()) {
 			return null;
 		}
+
 		Usuario usuario = usuarioRepository.findByEmail(userPass.email()).get();
-		if(!usuario.isEnabled()) {
-			return null;
-		}
 		
-		var usernamePassword = new UsernamePasswordAuthenticationToken(userPass.email(), userPass.senha());
-		
-		var auth = authenticationManager.authenticate(usernamePassword);
-			
 		var token = jwtService.generateToken(usuario.getEmail());
 		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
 				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token);
