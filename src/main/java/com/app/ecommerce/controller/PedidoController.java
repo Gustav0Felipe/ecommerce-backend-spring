@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,5 +33,23 @@ public class PedidoController {
 				.orElse(ResponseEntity.notFound().build())
 				;
 	}
+	
+	/*
+	@PostMapping
+	public ResponseEntity<String> finalizarPedido(@RequestBody PedidoDto pedido){
+		
+		System.out.println("Cep: " + pedido.cep());
+		Double valorTotal = pedidoService.calcularValorTotal(pedido);
+		JSONObject response = pixService.pixCreateCharge(pedido , valorTotal);
+		
+		if(response == null) {
+			response = new JSONObject();
+			response.put("Mensagem", "Pix não foi gerado.");
+		}else {
+			pedidoService.subirPedido(pedido);
+		}
+		return ResponseEntity.ok(response.toString());
+	}
+	*/
 	
 }
