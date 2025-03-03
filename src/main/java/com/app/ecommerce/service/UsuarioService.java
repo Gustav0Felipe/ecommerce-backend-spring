@@ -85,12 +85,10 @@ public class UsuarioService {
 
 		Usuario usuario = usuarioRepository.findByEmail(userPass.email()).get();
 		
-		var token = jwtService.generateToken(usuario.getEmail());
+		var token = gerarToken(usuario.getEmail());
 		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
 				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token);
 	}
-	
-	
 	
 	public List<Usuario> listarTodos() {
 		return usuarioRepository.findAll();
@@ -141,4 +139,8 @@ public class UsuarioService {
 			usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 			return usuarioRepository.save(usuario);
 	}
+	
+	private String gerarToken(String usuario) {
+        return "Bearer " + jwtService.generateToken(usuario);
+    }
 }
