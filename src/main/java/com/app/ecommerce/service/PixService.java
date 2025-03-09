@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.dto.PedidoDto;
-import com.app.ecommerce.util.Utilitarios;
 
 import br.com.efi.efisdk.EfiPay;
 import br.com.efi.efisdk.exceptions.EfiPayException;
@@ -19,15 +19,12 @@ public class PixService {
 	
 	private JSONObject options = new JSONObject();
 		
-	PixService(Utilitarios ultilitario){
-		
-		String clientId = "Client_Id_f86f96f2b8a1428c6f204e203aad127c1ee10f36";
 
-		String clientSecret = "Client_Secret_4421b3f3f317ee37ccafb42c2bad57cef68d7de3";
-    	    
-		String certificatePath = "./certs/" + "producao-560383-Certificado Ecommerce.p12";
-    	
-		System.out.println("ENTROU NO CONSTRUTOR" + certificatePath);
+	
+	PixService(@Value("#{environment.CLIENT_ID}") String clientId,
+				@Value("#{environment.CLIENT_SECRET}") String clientSecret,
+				@Value("#{environment.CERTIFICATE_PATH}") String certificatePath 
+			){
         options.put("client_id", clientId);
         options.put("client_secret", clientSecret);
         options.put("certificate", certificatePath);
