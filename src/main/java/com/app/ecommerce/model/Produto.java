@@ -57,7 +57,6 @@ public class Produto {
 	@NotNull(message = "A Largura não pode ser Nula.")
 	private Integer largura_cm;
 
-	
 	public Produto() {
 		
 	}
@@ -173,5 +172,4 @@ public class Produto {
 	public void setLargura_cm(Integer largura_cm) {
 		this.largura_cm = largura_cm;
 	}
-	
 }

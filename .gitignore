@@ -13,6 +13,9 @@ target/
 .springBeans
 .sts4-cache
 
+### Certificado ###
+certs/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

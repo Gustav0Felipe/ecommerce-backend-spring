@@ -1,7 +1,5 @@
 package com.app.ecommerce.model;
 
-import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -28,12 +25,8 @@ public class Pedido {
 	private Long num_ped;
 	
 	@ManyToOne
-	@JsonIgnoreProperties("pedido")
-	private Usuario usuario;
-	
-	@ManyToMany
 	@JsonIgnoreProperties("pedidos")
-	private List<Produto> produtos;
+	private Usuario usuario;
 	
 	@Column
 	@NotBlank
@@ -41,7 +34,6 @@ public class Pedido {
 	private String data_inicial;
 	
 	@Column
-	@NotBlank
 	@DateTimeFormat
 	private String data_final;		
 	
@@ -58,10 +50,9 @@ public class Pedido {
 	public Pedido() {
 	}
 
-	public Pedido(Usuario usuario, List<Produto> produtos, String dataInicial, String dataFinal,
+	public Pedido(Usuario usuario, String dataInicial, String dataFinal,
 			String status) {
 		this.usuario = usuario;
-		this.produtos = produtos;
 		this.data_inicial = dataInicial;
 		this.data_final = dataFinal;
 		this.status_ped = status;
@@ -81,14 +72,6 @@ public class Pedido {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
-	}
-
-	public List<Produto> getProdutos() {
-		return produtos;
-	}
-
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
 	}
 
 	public String getData_inicial() {

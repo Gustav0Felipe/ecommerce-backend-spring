@@ -2,6 +2,7 @@ package com.app.ecommerce.controller;
 
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.ecommerce.dto.PedidoDto;
 import com.app.ecommerce.model.Pedido;
 import com.app.ecommerce.service.PedidoService;
+import com.app.ecommerce.service.PixService;
+
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -22,6 +27,9 @@ public class PedidoController {
 	
 	@Autowired
 	private PedidoService pedidoService;
+	
+	@Autowired
+	private PixService pixService;
 	
 	@GetMapping
 	public ResponseEntity<List<Pedido>> listarTodos(){
@@ -36,9 +44,9 @@ public class PedidoController {
 				;
 	}
 	
-	/*
+	@Transactional
 	@PostMapping
-	public ResponseEntity<String> finalizarPedido(@RequestBody PedidoDto pedido){
+	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
 		
 		System.out.println("Cep: " + pedido.cep());
 		Double valorTotal = pedidoService.calcularValorTotal(pedido);
@@ -52,6 +60,4 @@ public class PedidoController {
 		}
 		return ResponseEntity.ok(response.toString());
 	}
-	*/
-	
 }
