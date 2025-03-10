@@ -7,11 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.model.Produto;
 import com.app.ecommerce.service.ProdutoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/produtos")
@@ -31,5 +34,10 @@ public class ProdutoController {
 		return produtoService.buscarProduto(id)
 				.map(produto -> ResponseEntity.ok(produto))
 				.orElse(ResponseEntity.notFound().build()); 
+	}
+	
+	@PostMapping
+	public ResponseEntity<Produto> criarProduto(@Valid Produto produto){
+		return ResponseEntity.ok(produtoService.criarProduto(produto));
 	}
 }
