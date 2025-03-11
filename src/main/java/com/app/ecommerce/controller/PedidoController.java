@@ -17,6 +17,7 @@ import com.app.ecommerce.dto.PedidoDto;
 import com.app.ecommerce.model.Pedido;
 import com.app.ecommerce.service.PedidoService;
 import com.app.ecommerce.service.PixService;
+import com.app.ecommerce.util.FreteApi;
 
 import jakarta.transaction.Transactional;
 
@@ -30,6 +31,9 @@ public class PedidoController {
 	
 	@Autowired
 	private PixService pixService;
+	
+	@Autowired
+	private FreteApi freteApi;
 	
 	@GetMapping
 	public ResponseEntity<List<Pedido>> listarTodos(){
@@ -48,15 +52,16 @@ public class PedidoController {
 	@PostMapping
 	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
 		
-		System.out.println("Cep: " + pedido.cep());
-		Double valorTotal = pedidoService.calcularValorTotal(pedido);
-		JSONObject response = pixService.pixCreateCharge(pedido , valorTotal);
+		JSONObject frete = freteApi.calculaFrete(pedido).getJSONArray("formas").getJSONObject(1);
+		Double valorPedido = pedidoService.calcularValorPedido(pedido);
+		
+		JSONObject response = pixService.pixCreateCharge(pedido , valorPedido + frete.getDouble("price"));
 		
 		if(response == null) {
 			response = new JSONObject();
 			response.put("Mensagem", "Pix não foi gerado.");
 		}else {
-			pedidoService.subirPedido(pedido);
+			pedidoService.subirPedido(pedido, frete.getDouble("price"));
 		}
 		return ResponseEntity.ok(response.toString());
 	}

@@ -37,7 +37,7 @@ public class PedidoService {
 		return pedidoRepository.findById(id);
 	}
 
-	public Double calcularValorTotal(PedidoDto pedido) {
+	public Double calcularValorPedido(PedidoDto pedido) {
 		Double valorTotal = 0d;
 		for(CartItemDto produto : pedido.produtos()) {
 			Optional<Produto> item = produtoRepository.findById(produto.id_prod());
@@ -50,20 +50,20 @@ public class PedidoService {
 	}
 	
 	//Testar
-	public void subirPedido(PedidoDto pedidoDto) {
+	public void subirPedido(PedidoDto pedidoDto, Double frete) {
 		
 		Pedido pedido = new Pedido();
 		
 		pedido.setUsuario(pedidoDto.usuario());
 		pedido.setData_inicial(LocalDate.now().toString());
 		pedido.setStatus_ped("pendente");
+		pedido.setFrete(frete);
 		
 		Pedido pedidoFeito = pedidoRepository.save(pedido);
 		
 		for(CartItemDto item : pedidoDto.produtos()) {
 			PedidoProduto prod = new PedidoProduto();
 			Optional<Produto> produto = produtoRepository.findById(item.id_prod());
-			//Ver se o valor total vai ser atualizado na tabela pedidos.
 			if(produto.isPresent()) {
 				pedido.setValor_total(pedido.getValor_total() + (produto.get().getValor() * item.quantity()));
 				

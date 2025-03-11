@@ -46,16 +46,19 @@ public class Pedido {
 	@NotNull
 	private double valor_total;
 	
+	@Column
+	private double frete;
 	
 	public Pedido() {
 	}
 
 	public Pedido(Usuario usuario, String dataInicial, String dataFinal,
-			String status) {
+			String status, double frete) {
 		this.usuario = usuario;
 		this.data_inicial = dataInicial;
 		this.data_final = dataFinal;
 		this.status_ped = status;
+		this.frete = frete;
 	}
 
 	public Long getNum_ped() {
@@ -105,4 +108,14 @@ public class Pedido {
 	public void setValor_total(double valor_total) {
 		this.valor_total = valor_total;
 	}
+
+	public double getFrete() {
+		return frete;
+	}
+                                                                                           
+	public void setFrete(double frete) {
+		this.frete = frete;
+	}
+	
+	
 }
