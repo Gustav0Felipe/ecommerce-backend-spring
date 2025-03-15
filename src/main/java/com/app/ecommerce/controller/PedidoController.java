@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.dto.PedidoDto;
 import com.app.ecommerce.model.Pedido;
+import com.app.ecommerce.service.ApiFreteService;
 import com.app.ecommerce.service.PedidoService;
-import com.app.ecommerce.service.PixService;
-import com.app.ecommerce.util.FreteApi;
+import com.app.ecommerce.service.ApiPixService;
 
 import jakarta.transaction.Transactional;
 
@@ -30,10 +30,10 @@ public class PedidoController {
 	private PedidoService pedidoService;
 	
 	@Autowired
-	private PixService pixService;
+	private ApiPixService pixService;
 	
 	@Autowired
-	private FreteApi freteApi;
+	private ApiFreteService freteApi;
 	
 	@GetMapping
 	public ResponseEntity<List<Pedido>> listarTodos(){
@@ -52,16 +52,16 @@ public class PedidoController {
 	@PostMapping
 	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
 		
-		JSONObject frete = freteApi.calculaFrete(pedido).getJSONArray("formas").getJSONObject(1);
+		Double frete = freteApi.calculaFrete(pedido).getJSONArray("formas").getJSONObject(1).getDouble("price");
 		Double valorPedido = pedidoService.calcularValorPedido(pedido);
 		
-		JSONObject response = pixService.pixCreateCharge(pedido , valorPedido + frete.getDouble("price"));
+		JSONObject response = pixService.pixAbrirPagamentoQrCode(pedido , valorPedido + frete);	
 		
 		if(response == null) {
 			response = new JSONObject();
 			response.put("Mensagem", "Pix não foi gerado.");
 		}else {
-			pedidoService.subirPedido(pedido, frete.getDouble("price"));
+			pedidoService.subirPedido(pedido, frete);
 		}
 		return ResponseEntity.ok(response.toString());
 	}

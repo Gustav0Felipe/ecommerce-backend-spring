@@ -57,6 +57,7 @@ public class PedidoService {
 		pedido.setUsuario(pedidoDto.usuario());
 		pedido.setData_inicial(LocalDate.now().toString());
 		pedido.setStatus_ped("pendente");
+		pedido.setValor_total(frete);
 		pedido.setFrete(frete);
 		
 		Pedido pedidoFeito = pedidoRepository.save(pedido);
