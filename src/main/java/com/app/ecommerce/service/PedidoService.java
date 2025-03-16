@@ -68,11 +68,25 @@ public class PedidoService {
 			if(produto.isPresent()) {
 				pedido.setValor_total(pedido.getValor_total() + (produto.get().getValor() * item.quantity()));
 				
-				prod.setPedidosProdutosId(new PedidosProdutosId(pedidoFeito.getNum_ped(), produto.get().getId()));
+				prod.setPedidosProdutosId(new PedidosProdutosId(produto.get(), pedidoFeito));
 				prod.setQtd_prod(item.quantity());
 				prod.setVal_prod(produto.get().getValor() * item.quantity());
 				pedidoProdutoRepository.save(prod);
 			}
 		}
+	}
+
+	public List<PedidoProduto> detalharPedido(Long pedido_id) {
+		return pedidoProdutoRepository.findAllByPedido(pedido_id);
+	}
+
+	public void finalizarPedido(Long pedido_id) {
+		pedidoRepository.findById(pedido_id)
+			.ifPresentOrElse(pedido -> {
+				pedido.setData_final(LocalDate.now().toString());
+				pedido.setStatus_ped("finalizado");
+				pedidoRepository.save(pedido);
+			}, null);
 	};
+	
 }

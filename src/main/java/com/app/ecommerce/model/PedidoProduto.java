@@ -2,10 +2,10 @@ package com.app.ecommerce.model;
 
 import java.io.Serializable;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -61,35 +61,35 @@ public class PedidoProduto {
 	static class PedidosProdutosId implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
-		@Column(name = "id_prod")
-		private Long id;
+		@ManyToOne
+		private Pedido pedido;
 		
-		@Column(name = "num_ped")
-	    private Long num_ped;
+		@ManyToOne
+		private Produto produto;
 
 		public PedidosProdutosId() {
 			
 		}
 		
-		public PedidosProdutosId(Long id, Long num_ped) {
-			this.id = id;
-			this.num_ped = num_ped;
+		public PedidosProdutosId(Produto produto, Pedido pedido) {
+			this.pedido = pedido;
+			this.produto = produto;
 		}
 
-		public Long getIdProduto() {
-			return id;
+		public Produto getProduto() {
+			return produto;
 		}
 
-		public void setIdProduto(Long id) {
-			this.id = id;
+		public void setProduto(Produto produto) {
+			this.produto = produto;
 		}
 
-		public Long getIdPedido() {
-			return num_ped;
+		public Pedido getPedido() {
+			return pedido;
 		}
 
-		public void setIdPedido(Long num_ped) {
-			this.num_ped = num_ped;
+		public void setPedido(Pedido pedido) {
+			this.pedido = pedido;
 		}
 	}
 	
