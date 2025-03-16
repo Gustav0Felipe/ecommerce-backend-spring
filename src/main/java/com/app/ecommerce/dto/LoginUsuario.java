@@ -1,7 +1,5 @@
 package com.app.ecommerce.dto;
 
-import java.util.List;
-
 public record LoginUsuario(
 	Long id,
 	
@@ -15,7 +13,7 @@ public record LoginUsuario(
 
 	String cpf, 
 	
-	List<String> role,
+	String role,
 	
 	String endereco, 
 	
