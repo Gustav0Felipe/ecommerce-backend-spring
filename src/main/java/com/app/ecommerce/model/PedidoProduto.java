@@ -2,6 +2,8 @@ package com.app.ecommerce.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -14,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 public class PedidoProduto {
 	
 	@EmbeddedId
+	@JsonIgnoreProperties({"senha"})
 	private PedidosProdutosId pedidosProdutosId;
 	
 	@NotNull
