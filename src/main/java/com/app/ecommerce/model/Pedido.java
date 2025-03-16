@@ -25,7 +25,7 @@ public class Pedido {
 	private Long num_ped;
 	
 	@ManyToOne
-	@JsonIgnoreProperties("pedidos")
+	@JsonIgnoreProperties({"pedidos", "senha"})
 	private Usuario usuario;
 	
 	@Column
