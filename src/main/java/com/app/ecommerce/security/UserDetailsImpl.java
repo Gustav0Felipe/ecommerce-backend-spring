@@ -16,7 +16,7 @@ public class UserDetailsImpl implements UserDetails{
 
 	private String username;
 	private String password;
-	private List<GrantedAuthority> roles;
+	private String role;
 	
 	public UserDetailsImpl() {
 	}
@@ -24,16 +24,15 @@ public class UserDetailsImpl implements UserDetails{
 	public UserDetailsImpl(Usuario usuario) {
 		this.username = usuario.getEmail();
 		this.password = usuario.getSenha();
-		
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		usuario.getRole().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.toString())));
-
-		this.roles = authorities;
+		this.role = usuario.getRole();
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return roles;
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        
+        authorities.add(new SimpleGrantedAuthority(role));
+        return authorities;
 	}
 
 	@Override
