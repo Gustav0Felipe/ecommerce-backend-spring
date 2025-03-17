@@ -45,7 +45,6 @@ public class Usuario {
 	@NotNull(message = "O CPF não pode estar Nulo.")
 	public String cpf;
 	
-	@NotNull(message = "A Permissão do Usuario não pode ser Nula.")
 	private String role;
 	
 	@NotBlank(message = "O Endereço não pode estar Vazio.")
