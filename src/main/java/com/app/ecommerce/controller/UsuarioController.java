@@ -83,8 +83,8 @@ public class UsuarioController {
 	}
 	
 	@PutMapping("/editar-senha")
-	public ResponseEntity<Usuario> editarSenha(@RequestBody Usuario usuario) {
-		return usuarioService.editarSenha(usuario);
+	public ResponseEntity<Usuario> editarSenha(@RequestBody EmailSenha credenciais) {
+		return usuarioService.editarSenha(credenciais);
 	}
 	
 	@DeleteMapping("/desativar/{id}")

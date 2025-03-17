@@ -137,16 +137,14 @@ public class UsuarioService {
 		return null;
 	}
 
-	public ResponseEntity<Usuario> editarSenha(Usuario usuario) {
-			
-			if(usuarioRepository.existsById(usuario.getId_user())) {
-				
-				usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-				return ResponseEntity.ok(usuarioRepository.save(usuario));
+	public ResponseEntity<Usuario> editarSenha(EmailSenha credenciais) {
+		Optional<Usuario> usuario = usuarioRepository.findById(credenciais.id_user());
+			if(usuario.isPresent()) {
+				usuario.get().setSenha(passwordEncoder.encode(credenciais.senha()));
+				return ResponseEntity.ok(usuarioRepository.save(usuario.get()));
 			}else {
 				return ResponseEntity.notFound().build();
 			}
-		
 	}
 	
 	private String gerarToken(String usuario) {
