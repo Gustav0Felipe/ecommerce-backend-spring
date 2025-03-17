@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,6 +48,7 @@ public class UsuarioService {
 
 			usuario.setVerificationCode(randomCode);
 			usuario.setEnabled(false);
+			usuario.setRole("USER");
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
 			String msg = ("<h1>Olá [[NOME]], aqui esta o link para confirmar seu cadastro: </h1>"
@@ -135,12 +137,33 @@ public class UsuarioService {
 		return null;
 	}
 
-	public Usuario editarSenha(Usuario usuario) {
-			usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-			return usuarioRepository.save(usuario);
+	public ResponseEntity<Usuario> editarSenha(Usuario usuario) {
+			
+			if(usuarioRepository.existsById(usuario.getId_user())) {
+				
+				usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+				return ResponseEntity.ok(usuarioRepository.save(usuario));
+			}else {
+				return ResponseEntity.notFound().build();
+			}
+		
 	}
 	
 	private String gerarToken(String usuario) {
         return "Bearer " + jwtService.generateToken(usuario);
     }
+
+	public ResponseEntity<String> desativarUsuario(Long id) {
+			String verificationCode = Utilitarios.gerarStringAlphanumerica(64);
+			Optional<Usuario> usuario = usuarioRepository.findById(id);
+			
+			if(usuario.isPresent()) {
+				usuario.get().setVerificationCode(verificationCode);
+				usuario.get().setEnabled(false);
+				usuarioRepository.save(usuario.get());	
+				return ResponseEntity.notFound().build();
+			}
+			return ResponseEntity.ok(null);
+		
+	}
 }
