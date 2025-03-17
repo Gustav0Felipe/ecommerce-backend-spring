@@ -102,7 +102,7 @@ public class UsuarioService {
 		
 		var token = gerarToken(usuario.getEmail());
 		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
-				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token);
+				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token, true);
 	}
 	
 	public List<Usuario> listarTodos() {
@@ -176,5 +176,25 @@ public class UsuarioService {
 			}
 			return ResponseEntity.notFound().build();
 		
+	}
+
+	public Boolean clienteExisteDesabilitado(String email) {
+		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+		if(usuario.isPresent() && !usuario.get().isEnabled()) {
+			return true;
+		}
+		return false;
+	}
+
+	public void emailAtivarUsuario(EmailSenha userPass) {
+		Optional<Usuario> usuario = usuarioRepository.findByEmail(userPass.email());
+		
+		String htmlMsg = 
+			("<h1>Olá [[NOME]], tentaram reativar sua conta no site Ecommerce, se a tentativa foi feita por você acesse: </h1>"
+			+ String.format
+			("<a href='%s/loja/cadastro/verificar/%s'>Clique Aqui</a>", URL_FRONTEND_EMAIL, usuario.get().getVerificationCode())
+			).replace("[[NOME]]", usuario.get().getNome_user());
+		
+		emailService.enviarEmailTexto(usuario.get().getEmail(), "Tentativa de Reativar sua Conta", htmlMsg);
 	}
 }

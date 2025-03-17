@@ -19,6 +19,8 @@ public record LoginUsuario(
 	
 	String foto,
 
-	String token
+	String token,
+	
+	Boolean enabled
 	) {
 }

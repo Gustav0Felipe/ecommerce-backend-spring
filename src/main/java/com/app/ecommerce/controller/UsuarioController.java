@@ -56,6 +56,13 @@ public class UsuarioController {
 	
 	@PostMapping("/logar")
 	public ResponseEntity<LoginUsuario> login(@RequestBody EmailSenha userPass){
+		
+		Boolean usuarioDesativado = usuarioService.clienteExisteDesabilitado(userPass.email());
+		
+		if(usuarioDesativado) {
+			usuarioService.emailAtivarUsuario(userPass);
+			return ResponseEntity.ok(new LoginUsuario(0L, "","", "", "", "", "", "", "", "",false));
+		}
 		return Optional.ofNullable(usuarioService.validarLogin(userPass))
 				.map(login -> ResponseEntity.ok(login))
 				.orElse(ResponseEntity.notFound().build());
