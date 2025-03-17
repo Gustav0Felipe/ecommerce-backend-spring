@@ -31,7 +31,7 @@ public class UsuarioService {
 	
 	private AuthenticationManager authenticationManager;
 	
-	private String URL_FRONTEND_EMAIL;	
+	private final String URL_FRONTEND_EMAIL;	
 	
 	
 	
@@ -39,7 +39,7 @@ public class UsuarioService {
 			UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
 			EmailService emailService, JwtService jwtService, 
 			AuthenticationManager authenticationManager,
-			@Value("${URL_FRONTEND_EMAIL")
+			@Value("${URL_FRONTEND_EMAIL}")
 			String URL_FRONTEND_EMAIL
 			) {
 		
