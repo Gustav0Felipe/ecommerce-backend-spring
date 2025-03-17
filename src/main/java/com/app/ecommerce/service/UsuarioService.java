@@ -3,7 +3,7 @@ package com.app.ecommerce.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,22 +21,36 @@ import com.app.ecommerce.util.Utilitarios;
 
 @Service
 public class UsuarioService {
-	@Autowired 
 	public UsuarioRepository usuarioRepository;
 	
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@Autowired
 	private EmailService emailService;
 	
-	@Autowired
 	private JwtService jwtService;
 	
-	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	//Testar tudo Inclusive Criptografia e Emails.
+	private String URL_FRONTEND_EMAIL;	
+	
+	
+	
+	public UsuarioService(
+			UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+			EmailService emailService, JwtService jwtService, 
+			AuthenticationManager authenticationManager,
+			@Value("${URL_FRONTEND_EMAIL")
+			String URL_FRONTEND_EMAIL
+			) {
+		
+			this.usuarioRepository = usuarioRepository;
+			this.passwordEncoder = passwordEncoder;
+			this.emailService = emailService;
+			this.jwtService = jwtService;
+			this.authenticationManager = authenticationManager;
+			this.URL_FRONTEND_EMAIL = URL_FRONTEND_EMAIL;
+	}
+
 	public Usuario cadastrarCliente(Usuario usuario) {
 		
 		if(usuarioRepository.existsByEmail(usuario.getEmail())){
@@ -52,8 +66,8 @@ public class UsuarioService {
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
 			String msg = ("<h1>Olá [[NOME]], aqui esta o link para confirmar seu cadastro: </h1>"
-					+ String.format("<a href='%s/verificar/%s'>Clique Aqui</a>", 
-							"http://localhost:8080/usuarios", usuario.getVerificationCode())
+					+ String.format("<a href='%s/loja/cadastro/verificar/%s'>Clique Aqui</a>", 
+							URL_FRONTEND_EMAIL, usuario.getVerificationCode())
 					).replace("[[NOME]]", usuario.getNome_user());
 			emailService.enviarEmailTexto(usuario.getEmail(), "Confirme o Seu Cadastro.", msg);
 
@@ -80,7 +94,6 @@ public class UsuarioService {
 		
 		Authentication authentication = authenticationManager.authenticate(credenciais);
 		
-		//Checa se Existe e se esta Ativado.
 		if(!authentication.isAuthenticated() | !usuarioRepository.findByEmail(userPass.email()).get().isEnabled()) {
 			return null;
 		}
@@ -127,8 +140,8 @@ public class UsuarioService {
 			String htmlMsg = 
 				("<h1>Aviso!: Tentaram alterar a senha de sua conta no site Ecommerce</h1>"
 				+ "<p>Se for o dono da conta, [[NOME]] , e não for aquele que efetuou o pedido, entre em contato, caso tenha efetuado o pedido: </p>"
-				+ "<a href='%s/perfil/editar-senha/%s'>Para prosseguir e alterar sua senha clique aqui.<a>"
-				.formatted("http://localhost:8080/usuarios", token)
+				+ "<a href='%s/loja/perfil/editar-senha/auth=%s'>Para prosseguir e alterar sua senha clique aqui.<a>"
+				.formatted(URL_FRONTEND_EMAIL, token)
 				).replace("[[NOME]]", usuario.getNome_user());
 			
 			emailService.enviarEmailTexto(usuario.getEmail(), "Tentativa de Alteração de Senha", htmlMsg);
@@ -159,9 +172,9 @@ public class UsuarioService {
 				usuario.get().setVerificationCode(verificationCode);
 				usuario.get().setEnabled(false);
 				usuarioRepository.save(usuario.get());	
-				return ResponseEntity.notFound().build();
+				return ResponseEntity.ok(null);
 			}
-			return ResponseEntity.ok(null);
+			return ResponseEntity.notFound().build();
 		
 	}
 }
