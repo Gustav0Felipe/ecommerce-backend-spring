@@ -102,7 +102,7 @@ public class UsuarioService {
 		
 		var token = gerarToken(usuario.getEmail());
 		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
-				usuario.getSenha() ,usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token, true);
+				usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token, true);
 	}
 	
 	public List<Usuario> listarTodos() {
