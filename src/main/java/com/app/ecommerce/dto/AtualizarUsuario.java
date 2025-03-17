@@ -11,7 +11,7 @@ public record AtualizarUsuario (
 		String telefone,
 		@NotNull(message = "Endereço do Usuário não pode ser Nulo.")
 		String endereco,
-		@NotNull(message = "A Foto do Usuário não pode ser Nula.")
+		
 		String foto)
 {
 
