@@ -62,13 +62,15 @@ public class BasicSecurityConfig {
 
     	http
 	        .authorizeHttpRequests((auth) -> auth
+	        		.requestMatchers(HttpMethod.GET, "/produtos").permitAll()
+	        		.requestMatchers(HttpMethod.GET, "/produtos/produto/{id}").permitAll()
 	        		.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
 	                .requestMatchers("/usuarios/verificar/{code}").permitAll()
 	                .requestMatchers("/usuarios/logar").permitAll()
-	                .requestMatchers(HttpMethod.GET, "/pedidos").hasRole("ADMIN")
-	                .requestMatchers(HttpMethod.GET, "/pedidos/pedido/{pedido}").hasRole("ADMIN")
-	                .requestMatchers(HttpMethod.PUT, "/pedidos/pedido/{pedido}").hasRole("ADMIN")
-	                .requestMatchers(HttpMethod.POST, "/produtos").hasRole("ADMIN")
+	                .requestMatchers(HttpMethod.GET, "/pedidos").hasAnyAuthority("ADMIN")
+	                .requestMatchers(HttpMethod.GET, "/pedidos/pedido/{pedido}").hasAnyAuthority("ADMIN")
+	                .requestMatchers(HttpMethod.PUT, "/pedidos/pedido/{pedido}").hasAnyAuthority("ADMIN")
+	                .requestMatchers(HttpMethod.POST, "/produtos").hasAnyAuthority("ADMIN")
 	                .requestMatchers("/error/**").permitAll()
 	                .requestMatchers(HttpMethod.OPTIONS).permitAll()
 	                .anyRequest().authenticated())
