@@ -1,26 +1,24 @@
 package com.app.ecommerce.dto;
 
-import java.util.List;
-
 public record LoginUsuario(
-	Long id,
+	Long id_user,
 	
-	String nome,
+	String nome_user,
 	
 	String telefone,
 	
 	String email,
 
-	String senha,
-
 	String cpf, 
 	
-	List<String> role,
+	String role,
 	
 	String endereco, 
 	
 	String foto,
 
-	String token
+	String token,
+	
+	Boolean enabled
 	) {
 }

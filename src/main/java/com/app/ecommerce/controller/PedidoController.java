@@ -2,6 +2,7 @@ package com.app.ecommerce.controller;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,15 +10,17 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.dto.PedidoDto;
 import com.app.ecommerce.model.Pedido;
+import com.app.ecommerce.model.PedidoProduto;
+import com.app.ecommerce.service.ApiFreteService;
+import com.app.ecommerce.service.ApiPixService;
 import com.app.ecommerce.service.PedidoService;
-import com.app.ecommerce.service.PixService;
-import com.app.ecommerce.util.FreteApi;
 
 import jakarta.transaction.Transactional;
 
@@ -30,10 +33,10 @@ public class PedidoController {
 	private PedidoService pedidoService;
 	
 	@Autowired
-	private PixService pixService;
+	private ApiPixService pixService;
 	
 	@Autowired
-	private FreteApi freteApi;
+	private ApiFreteService freteApi;
 	
 	@GetMapping
 	public ResponseEntity<List<Pedido>> listarTodos(){
@@ -48,14 +51,30 @@ public class PedidoController {
 				;
 	}
 	
+	@PostMapping("/calcular-frete")
+	public ResponseEntity<String> calcularFrete(@RequestBody PedidoDto pedido){
+		JSONObject response = freteApi.calculaFrete(pedido);
+		return ResponseEntity.ok(response.toString());
+	}
+	
+	
 	@Transactional
 	@PostMapping
 	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
 		
-		JSONObject frete = freteApi.calculaFrete(pedido).getJSONArray("formas").getJSONObject(1);
+		JSONArray formas = freteApi.calculaFrete(pedido).getJSONArray("formas");
+
+		JSONObject frete = new JSONObject();
+		
+		formas.forEach((f) -> {
+			JSONObject e = new JSONObject(f.toString());
+			if(e.get("id").equals(pedido.selectedEnvio())) {
+				frete.put("price", e.getDouble("price"));;
+			};
+		});
 		Double valorPedido = pedidoService.calcularValorPedido(pedido);
 		
-		JSONObject response = pixService.pixCreateCharge(pedido , valorPedido + frete.getDouble("price"));
+		JSONObject response = pixService.pixAbrirPagamentoQrCode(pedido , valorPedido + frete.getDouble("price"));	
 		
 		if(response == null) {
 			response = new JSONObject();
@@ -64,5 +83,19 @@ public class PedidoController {
 			pedidoService.subirPedido(pedido, frete.getDouble("price"));
 		}
 		return ResponseEntity.ok(response.toString());
+	}
+	
+	@Transactional
+	@GetMapping("/pedido/{pedido}")
+	public List<PedidoProduto> detalharPedido(@PathVariable Long pedido) {
+		List<PedidoProduto> produtos = pedidoService.detalharPedido(pedido);
+		return produtos;
+	}
+	
+	
+	@PutMapping("/pedido/{pedido}")
+	public ResponseEntity<String> finalizarPedido(@PathVariable Long pedido){
+		pedidoService.finalizarPedido(pedido);
+		return ResponseEntity.ok("Sucesso.");
 	}
 }

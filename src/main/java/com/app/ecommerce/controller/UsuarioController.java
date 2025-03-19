@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuarios")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UsuarioController {
 
 	@Autowired
@@ -53,6 +56,13 @@ public class UsuarioController {
 	
 	@PostMapping("/logar")
 	public ResponseEntity<LoginUsuario> login(@RequestBody EmailSenha userPass){
+		
+		Boolean usuarioDesativado = usuarioService.clienteExisteDesabilitado(userPass.email());
+		
+		if(usuarioDesativado) {
+			usuarioService.emailAtivarUsuario(userPass);
+			return ResponseEntity.ok(new LoginUsuario(0L, "","", "", "", "", "", "", "",false));
+		}
 		return Optional.ofNullable(usuarioService.validarLogin(userPass))
 				.map(login -> ResponseEntity.ok(login))
 				.orElse(ResponseEntity.notFound().build());
@@ -80,8 +90,12 @@ public class UsuarioController {
 	}
 	
 	@PutMapping("/editar-senha")
-	public Usuario editarSenha(@RequestBody Usuario usuario) {
-		return usuarioService.editarSenha(usuario);
+	public ResponseEntity<Usuario> editarSenha(@RequestBody EmailSenha credenciais) {
+		return usuarioService.editarSenha(credenciais);
 	}
 	
+	@DeleteMapping("/desativar/{id}")
+	public ResponseEntity<String> desativarUsuario(@PathVariable Long id) {
+		return usuarioService.desativarUsuario(id);
+	}
 }
