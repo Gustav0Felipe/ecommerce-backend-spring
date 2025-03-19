@@ -2,6 +2,7 @@ package com.app.ecommerce.controller;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,20 +51,36 @@ public class PedidoController {
 				;
 	}
 	
+	@PostMapping("/calcular-frete")
+	public ResponseEntity<String> calcularFrete(@RequestBody PedidoDto pedido){
+		JSONObject response = freteApi.calculaFrete(pedido);
+		return ResponseEntity.ok(response.toString());
+	}
+	
+	
 	@Transactional
 	@PostMapping
 	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
 		
-		Double frete = freteApi.calculaFrete(pedido).getJSONArray("formas").getJSONObject(1).getDouble("price");
+		JSONArray formas = freteApi.calculaFrete(pedido).getJSONArray("formas");
+
+		JSONObject frete = new JSONObject();
+		
+		formas.forEach((f) -> {
+			JSONObject e = new JSONObject(f.toString());
+			if(e.get("id").equals(pedido.selectedEnvio())) {
+				frete.put("price", e.getDouble("price"));;
+			};
+		});
 		Double valorPedido = pedidoService.calcularValorPedido(pedido);
 		
-		JSONObject response = pixService.pixAbrirPagamentoQrCode(pedido , valorPedido + frete);	
+		JSONObject response = pixService.pixAbrirPagamentoQrCode(pedido , valorPedido + frete.getDouble("price"));	
 		
 		if(response == null) {
 			response = new JSONObject();
 			response.put("Mensagem", "Pix não foi gerado.");
 		}else {
-			pedidoService.subirPedido(pedido, frete);
+			pedidoService.subirPedido(pedido, frete.getDouble("price"));
 		}
 		return ResponseEntity.ok(response.toString());
 	}

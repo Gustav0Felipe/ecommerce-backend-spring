@@ -74,15 +74,18 @@ public class ApiFreteService {
 			
 			JSONArray formasDeEnvio = new JSONArray(apiResponse.getBody());
 			JSONArray opcoes = new JSONArray();
-			
+			System.out.println(formasDeEnvio);
 			formasDeEnvio.forEach( f -> {
 				JSONObject e = new JSONObject(f.toString());
 				if(e.has("name") && e.has("price")){
-					opcoes.put(new JSONObject().put("name", e.get("name").toString())
+					opcoes.put(new JSONObject()
+							.put("id", e.getInt("id"))
+							.put("name", e.get("name").toString())
 							.put("company", e.getJSONObject("company").getString("name"))
 							.put("price", e.getDouble("price"))
 							);
 				}
+			
 			});
 			JSONObject response = new JSONObject().put("formas", opcoes);
 			return response;
