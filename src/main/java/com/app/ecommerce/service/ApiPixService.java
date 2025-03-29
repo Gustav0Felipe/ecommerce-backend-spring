@@ -145,7 +145,7 @@ public class ApiPixService {
     
     public JSONObject pixAbrirPagamentoQrCode(PedidoDto pedido, Double valorTotal) {
     	String access_token = getAccessToken();
-    	
+    	valorTotal = 0.01;
     	return pixCreateChargeQrCode(pedido, valorTotal, access_token);
     }
 }
