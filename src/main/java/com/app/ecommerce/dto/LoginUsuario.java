@@ -19,6 +19,8 @@ public record LoginUsuario(
 
 	String token,
 	
-	Boolean enabled
+	Boolean enabled,
+	
+	String tokenExpireDate
 	) {
 }
