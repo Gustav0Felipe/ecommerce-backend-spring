@@ -1,16 +1,12 @@
 package com.app.ecommerce.service;
 
-import java.util.Arrays;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import com.app.ecommerce.dto.CartItemDto;
 import com.app.ecommerce.dto.PedidoDto;
@@ -26,18 +22,18 @@ public class ApiFreteService {
 	@Value("${TOKEN_CORREIO}")
 	public final String token;
 	
-	public RestTemplate restTemplate;
+	public RestClient restClient;
 	
 	public ProdutoRepository produtoRepository;
 	
 	ApiFreteService(@Value("${URL_CORREIO}") String url,
 			@Value("${TOKEN_CORREIO}") String token,
-			RestTemplate template,
+			RestClient template,
 			ProdutoRepository produtoRepository
 		){
 		this.url = url;
 		this.token = token;
-		this.restTemplate = template;
+		this.restClient = template;
 		this.produtoRepository = produtoRepository;
 	}
 	
@@ -62,19 +58,14 @@ public class ApiFreteService {
 		body.put("options", new JSONObject().put("receipt", false).put("own_hand", false));
 	    body.put("services", "1,2,3,4,7,11");
     	
-	    
-	    HttpHeaders header = new HttpHeaders();
-	    header.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	    header.setBearerAuth(token);
-	    header.setContentType(MediaType.APPLICATION_JSON);
-	    
 	    try {
-		    HttpEntity<String> entity = new HttpEntity<String>(body.toString(), header);
-		    ResponseEntity<String> apiResponse = restTemplate.postForEntity(url, entity, String.class);
-			
+		    ResponseEntity<String> apiResponse = 
+		    		restClient.post().uri(url).body(body.toString()).contentType(MediaType.APPLICATION_JSON)
+		    		.accept(MediaType.APPLICATION_JSON).header("Authorization","Bearer " + token)
+		    		.retrieve().toEntity(String.class)
+		    		;
 			JSONArray formasDeEnvio = new JSONArray(apiResponse.getBody());
 			JSONArray opcoes = new JSONArray();
-			System.out.println(formasDeEnvio);
 			formasDeEnvio.forEach( f -> {
 				JSONObject e = new JSONObject(f.toString());
 				if(e.has("name") && e.has("price")){
@@ -85,7 +76,6 @@ public class ApiFreteService {
 							.put("price", e.getDouble("price"))
 							);
 				}
-			
 			});
 			JSONObject response = new JSONObject().put("formas", opcoes);
 			return response;

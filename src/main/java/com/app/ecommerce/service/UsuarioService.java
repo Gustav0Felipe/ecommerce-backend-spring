@@ -1,5 +1,6 @@
 package com.app.ecommerce.service;
 
+import java.text.DateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,8 +102,10 @@ public class UsuarioService {
 		Usuario usuario = usuarioRepository.findByEmail(userPass.email()).get();
 		
 		var token = gerarToken(usuario.getEmail());
+		
+		String tokenExpireDate = DateFormat.getInstance().format(jwtService.getExpireDate());
 		return new LoginUsuario(usuario.getId_user(), usuario.getNome_user(), usuario.getTelefone(), usuario.getEmail(),
-				usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token, true);
+				usuario.getCpf(), usuario.getRole(), usuario.getEndereco(), usuario.getFoto(), token, true, tokenExpireDate);
 	}
 	
 	public List<Usuario> listarTodos() {

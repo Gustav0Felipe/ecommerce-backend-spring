@@ -61,7 +61,7 @@ public class UsuarioController {
 		
 		if(usuarioDesativado) {
 			usuarioService.emailAtivarUsuario(userPass);
-			return ResponseEntity.ok(new LoginUsuario(0L, "","", "", "", "", "", "", "",false));
+			return ResponseEntity.ok(new LoginUsuario(0L, "","", "", "", "", "", "", "",false , ""));
 		}
 		return Optional.ofNullable(usuarioService.validarLogin(userPass))
 				.map(login -> ResponseEntity.ok(login))

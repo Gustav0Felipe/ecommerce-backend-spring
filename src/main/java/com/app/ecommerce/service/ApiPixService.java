@@ -6,20 +6,17 @@ import java.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import com.app.ecommerce.dto.PedidoDto;
 
 @Service
 public class ApiPixService {
 	
-	public RestTemplate restTemplate;
+	public RestClient restClient;
 
 	private final String client_id;
 	
@@ -32,36 +29,37 @@ public class ApiPixService {
 	ApiPixService(@Value("${CLIENT_ID}") String clientId,
 				@Value("${CLIENT_SECRET}") String clientSecret,
 				@Value("${URL_PIX}") String url,
-				RestTemplate restTemplate
+				RestClient restClient
 			){
 		this.client_id = clientId;
 		this.client_secret = clientSecret;
 		this.url = url;
-		this.restTemplate = restTemplate;
+		this.restClient = restClient;
 		basicAuth = Base64.getEncoder().encodeToString(((client_id+':'+client_secret).getBytes()));
 	}
 	
 	public String getAccessToken() {
-	    HttpHeaders header = new HttpHeaders();
-	    header.setContentType(MediaType.APPLICATION_JSON);
-	    header.setBasicAuth(basicAuth);
-	    
 	    JSONObject body = new JSONObject();
-	    
+
 	    body.put("grant_type", "client_credentials");
-	    HttpEntity<String> entity = new HttpEntity<String>(body.toString(), header);
 	    
-	    ResponseEntity<String> apiResponse = restTemplate.postForEntity(url + "/oauth/token", entity, String.class);
+	    ResponseEntity<String> apiResponse = restClient.post().uri(url + "/oauth/token", "")
+	    		.body(body.toString())
+	    		.contentType(MediaType.APPLICATION_JSON)
+	    		.header("Authorization", "Basic " + basicAuth).retrieve().toEntity(String.class);
+	    		
 	    JSONObject response = new JSONObject(apiResponse.getBody());
 	    
 	    return response.getString("access_token");
 	}
 	  
-    public JSONObject pixCreateEVP(HttpHeaders header){
+    public JSONObject pixCreateEVP(String access_token){
         try {  
-			HttpEntity<String> entity = new HttpEntity<String>(header);
-		    ResponseEntity<String> apiCreateEvp = restTemplate.postForEntity(
-		    	    url + "/v2/gn/evp", entity, String.class);
+		    ResponseEntity<String> apiCreateEvp = restClient.post()
+			    		.uri(url + "/v2/gn/evp","")
+	    				.header("Authorization",access_token)
+			    		.contentType(MediaType.APPLICATION_JSON)
+			    		.retrieve().toEntity(String.class);
 			JSONObject response = new JSONObject(apiCreateEvp.getBody());
         	return response;
         }
@@ -71,20 +69,21 @@ public class ApiPixService {
         return null;
     }
 
-    public JSONObject pixCreateChargeQrCode(PedidoDto pedido, Double valorTotal, HttpHeaders header){
+    public JSONObject pixCreateChargeQrCode(PedidoDto pedido, Double valorTotal, String access_token){
     	try {
-		    header.setContentType(MediaType.APPLICATION_JSON);
+    		
+		    ResponseEntity<String> apiListEvp = restClient.get()
+		    				.uri(url + "/v2/gn/evp", "")
+		    				.header("Authorization","Bearer " + access_token)
+		    				.header("content-type", "application/json").retrieve().toEntity(String.class);
 		    
-			HttpEntity<String> entity = new HttpEntity<String>(header);
-		    ResponseEntity<String> apiListEvp = restTemplate.exchange(
-		    	    url + "/v2/gn/evp", HttpMethod.GET, entity, String.class);
 			JSONObject listEvp = new JSONObject(apiListEvp.getBody());
 		    
 			String chave = "";
 			if(!listEvp.isEmpty()) {
 				chave = listEvp.getJSONArray("chaves").getString(0);
 			}else {
-				chave = pixCreateEVP(header).toString();
+				chave = pixCreateEVP(access_token).toString();
 			}
 			
 			JSONObject body = new JSONObject();
@@ -103,15 +102,17 @@ public class ApiPixService {
 	        infoAdicionais.put(new JSONObject().put("nome", pedido.usuario().getNome_user()).put("valor", valor.toString()));
 	        body.put("infoAdicionais", infoAdicionais);
 
-
-	        HttpEntity<String> entityCharge = new HttpEntity<String>(body.toString(), header);
-	        ResponseEntity<String> responseCharge = restTemplate.postForEntity(
-	        		url + "/v2/cob", entityCharge, String.class);
+	        ResponseEntity<String> responseCharge = restClient.post()
+	        		.uri(url + "/v2/cob", "")
+	        		.header("Authorization","Bearer " + access_token)
+	        		.contentType(MediaType.APPLICATION_JSON)
+	        		.body(body.toString())
+	        		.retrieve().toEntity(String.class);
 	        
 			JSONObject charge = new JSONObject(responseCharge.getBody());
 			   
 			int idFromJson= charge.getJSONObject("loc").getInt("id");
-			charge.put("QRCode", pixGenerateQRCode(String.valueOf(idFromJson), header));
+			charge.put("QRCode", pixGenerateQRCode(String.valueOf(idFromJson), access_token));
 			    
 			JSONObject response = new JSONObject();
 			response.put("valor", charge.get("valor"));
@@ -127,11 +128,11 @@ public class ApiPixService {
 	    return null;
 	}
 
-    public String pixGenerateQRCode(String id, HttpHeaders header){
+    public String pixGenerateQRCode(String id, String access_token){
         try {
-        	HttpEntity<String> entity = new HttpEntity<String>(header);
-  	        ResponseEntity<String> generateQrCode = restTemplate.exchange(
-  		    	    url + "/v2/loc/" + id + "/qrcode", HttpMethod.GET, entity, String.class);
+  	        ResponseEntity<String> generateQrCode = restClient.get().uri(url + "/v2/loc/" + id + "/qrcode", "")
+  	        				.header("Authorization","Bearer " + access_token).retrieve().toEntity(String.class);
+
   	        JSONObject response = new JSONObject(generateQrCode.getBody());
             return response.get("imagemQrcode").toString();
         }
@@ -143,10 +144,9 @@ public class ApiPixService {
     
     
     public JSONObject pixAbrirPagamentoQrCode(PedidoDto pedido, Double valorTotal) {
-    	HttpHeaders header = new HttpHeaders();
-	    header.setBearerAuth(getAccessToken());
-    	
-    	return pixCreateChargeQrCode(pedido, valorTotal, header);
+    	String access_token = getAccessToken();
+    	valorTotal = 0.01;
+    	return pixCreateChargeQrCode(pedido, valorTotal, access_token);
     }
 }
 

@@ -5,6 +5,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +63,6 @@ public class PedidoController {
 	@Transactional
 	@PostMapping
 	public ResponseEntity<String> subirPedido(@RequestBody PedidoDto pedido){
-		
 		JSONArray formas = freteApi.calculaFrete(pedido).getJSONArray("formas");
 
 		JSONObject frete = new JSONObject();
@@ -74,11 +75,18 @@ public class PedidoController {
 		});
 		Double valorPedido = pedidoService.calcularValorPedido(pedido);
 		
+		if(frete.isNull("price")) {
+			ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+			detail.setDetail("Pix não foi gerado, Forma de Envio não Disponivel.");
+			return ResponseEntity.of(detail).build();
+		}
+		
 		JSONObject response = pixService.pixAbrirPagamentoQrCode(pedido , valorPedido + frete.getDouble("price"));	
 		
 		if(response == null) {
-			response = new JSONObject();
-			response.put("Mensagem", "Pix não foi gerado.");
+			ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+			detail.setDetail("Pix não foi gerado.");
+			return ResponseEntity.of(detail).build();
 		}else {
 			pedidoService.subirPedido(pedido, frete.getDouble("price"));
 		}
