@@ -57,12 +57,16 @@ public class Produto {
 	@NotNull(message = "A Largura não pode ser Nula.")
 	private Integer largura_cm;
 
+	private Boolean enabled;
+	
 	public Produto() {
 		
 	}
 	
 	public Produto(Long id, String nome, String descricao, Float custo, Float valor, 
-			Integer estoque, Categoria categoria, String imagem, Double peso_kg, Integer comprimento_cm, Integer altura_cm, Integer largura_cm) {
+			Integer estoque, Categoria categoria, String imagem, Double peso_kg,
+			Integer comprimento_cm, Integer altura_cm, Integer largura_cm,
+			Boolean enabled) {
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
@@ -75,6 +79,7 @@ public class Produto {
 		this.comprimento_cm = comprimento_cm;
 		this.altura_cm = altura_cm;
 		this.largura_cm = largura_cm;
+		this.enabled = enabled;
 	}
 
 	public Long getId() {
@@ -171,5 +176,13 @@ public class Produto {
 
 	public void setLargura_cm(Integer largura_cm) {
 		this.largura_cm = largura_cm;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 }
