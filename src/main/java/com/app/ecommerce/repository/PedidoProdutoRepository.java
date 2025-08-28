@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.app.ecommerce.model.PedidoProduto;
+import com.app.ecommerce.model.PedidoProduto.PedidosProdutosId;
 
 @Repository
-public interface PedidoProdutoRepository extends JpaRepository<PedidoProduto, Long>{
+public interface PedidoProdutoRepository extends JpaRepository<PedidoProduto, PedidosProdutosId>{
 
 	List<PedidoProduto> findAll();
 
