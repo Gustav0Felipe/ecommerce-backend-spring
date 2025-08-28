@@ -63,7 +63,8 @@ public class UsuarioService {
 
 			usuario.setVerificationCode(randomCode);
 			usuario.setEnabled(false);
-			usuario.setRole("USER");
+			usuario.setRole("ADMIN");
+			
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			
 			String msg = ("<h1>Olá [[NOME]], aqui esta o link para confirmar seu cadastro: </h1>"
